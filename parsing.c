@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/26 16:53:45 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/26 17:51:00 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,8 @@ int main()
     
     if(check_char1(map[0], '1')  || check_char1(map[height - 1], '1'))
         printf("error\n");
+    printf("height : %d\n", height);
+    printf("width : %d\n", width);
     free_array(res);
     return (0);
 }
