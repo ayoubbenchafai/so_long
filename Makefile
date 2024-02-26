@@ -1,6 +1,6 @@
 NAME = so_long
 CC = cc -g
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror 
 
 SRC = test.c get_next_line_bonus.c gnl_utils_bonus.c
 

@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:20:43 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/24 22:34:55 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/26 15:34:44 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <stdlib.h>
 #include  <fcntl.h>
 #include  <mlx.h>
-// #include  <keysym.h>
 # include <unistd.h>
 # include <stdio.h> //delete it
 
@@ -26,6 +25,12 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+// #define malloc(x) NULL
+
+
+
+// while()
 
 typedef struct	s_data {
 	void	*img;
@@ -45,4 +50,7 @@ size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
 char	*ft_strjoin(char *s1, const char *s2);
 char	*ft_strcpy(char *dst, const char *src);
+int	nbr_strings(const char *s, char c);
+char	**ft_split(char const *s, char c);
+
 #endif
