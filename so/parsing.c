@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 12:46:56 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 13:32:12 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int len_char(char *s, char c)
         s++;
     }
     if(i > 1)
-        return (1);
+        return (i);
     return (0);  
 }
 
@@ -135,12 +135,69 @@ int  check_errors(char *s, char **map)
 
 void f(){system("leaks a.out");}
 
+typedef struct s_player
+{
+    int x;
+    int y;
+} t_player;
+typedef struct s_data
+{
+    void        *mlx_ptr;
+    void        *win_ptr;
+    void        *img;
+    int         img_w;
+    int         img_h;
+    int         width;
+    int         height;
+    t_player    player;
+} t_data;
+char *get_path_image(int component)
+{
+    char *path;
+    if(component == '1')
+        path = "./images/textures1.xpm";
+    else if(component == '0')
+        path = "./images/texture_black.xpm";
+    else if(component == 'P')
+        path = "./images/player.xpm";
+    else if(component == 'C')
+        path = "./images/zyro-image.xpm";
+    else if(component == 'E')
+        path = "./images/exitt.xpm";
+    return (path);
+}
+
+t_data *mlx(t_data *data, char **map)
+{
+    int x;
+    int y;
+    
+    y = -1;
+    data->mlx_ptr = mlx_init();
+    data->win_ptr = mlx_new_window(data->mlx_ptr, data->width, data->height, "./so_long");
+    while(y < data->height)
+    {
+        x = -1;
+        while(x < data->width)
+        {
+            if(data.map[y][x] == 'P')
+            {
+                data->player.x = x * 50;
+                data->player.y = y * 50;  
+                
+            }
+            data->img = mlx_xpm_file_to_image(data->mlx_ptr, get_path_image(map[y][x], &data->img_w, &data->img_h));
+            mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, x * 50, y * 50);
+        }
+    }
+    return (data);
+}
 int main(int ac, char *av[])
 {
     int fd;
     char *s;
     char **map;
-
+    t_data data;
     if(ac != 2)
         return (1);    
     fd = open(av[1], O_RDWR);
@@ -156,10 +213,12 @@ int main(int ac, char *av[])
         return (1);
     int i = 0;
     while(map[i])
-    {
-        printf("%s\n",map[i]);    
         i++;
-    }
+        
+    data.height = i;
+    data.width  = ft_strlen(map[0]);
     
+    printf("height : %d\n", data.height);
+    printf("width : %d\n", data.width);
     return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:06:14 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/27 21:29:33 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 13:28:29 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,13 +220,13 @@ int main()
 
     data.win_ptr = mlx_new_window(data.mlx_ptr, width * 50 , height * 50, "./so_long");
 
-    int x = 0,y = 0;
+    int x ,y = -1;
     int x_w = 0,y_h = 0;
     int i= 0;
-    while(y < height)
+    while(++y < height)
     {
-        x = 0;
-        while(x < width)
+        x = -1;
+        while(++x < width)
         {
             if(data.map[y][x] == 'P')
             {
@@ -235,9 +235,9 @@ int main()
             }
             data.img = mlx_xpm_file_to_image(data.mlx_ptr, get_path_image(data.map[y][x]), &img_width, &img_height);    
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
-            x++;
+            // x++;
         }
-        y++;
+        // y++;
     }
      
 
