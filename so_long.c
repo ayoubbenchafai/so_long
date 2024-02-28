@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:06:14 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 13:28:29 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 16:16:41 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,6 @@ int main()
     data.win_ptr = mlx_new_window(data.mlx_ptr, width * 50 , height * 50, "./so_long");
 
     int x ,y = -1;
-    int x_w = 0,y_h = 0;
     int i= 0;
     while(++y < height)
     {
