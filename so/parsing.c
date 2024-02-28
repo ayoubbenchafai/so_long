@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 21:34:24 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 21:50:53 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,10 +218,9 @@ t_data    mlx(t_data data, char **map)
 
 void update_position(t_data *data, int new_x, int new_y)
 {
-    static int i;
-    int k;
-    i = 1;
     
+    int         k;
+    static int i = 1;
     k = get_nbr_collectible(data->map, data->height,data->width);
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/texture_black.xpm", &data->img_w, &data->img_h);
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
@@ -230,20 +229,25 @@ void update_position(t_data *data, int new_x, int new_y)
         data->map[new_y/50][new_x/50] = '0';
     if(k == 0 && data->map[new_y/50][new_x/50] == 'E')
         exit(0);
+   
     if(data->map[new_y/50][new_x/50] != '1'  && data->map[new_y/50][new_x/50] != 'E')
     {
         data->player.x = new_x;  
         data->player.y = new_y;  
+        printf("%d\n", i++);
+
     }
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/player.xpm", &data->img_w, &data->img_h);
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
-    printf("%d\n", i++);  
 }
 
 int key_hook(int key, t_data *data)
 {
-    int new_x = data->player.x;
-    int new_y = data->player.y;
+    int new_x;
+    int new_y;
+    
+    new_y= data->player.y;
+    new_x = data->player.x;
     if(key == 53)
         exit(0);
     if(key == 2) // D
@@ -262,8 +266,8 @@ int main(int ac, char *av[])
 {
     int fd;
     char *s;
+    
     t_data data;
-    // char **map;
     if(ac != 2)
         return (1);    
     fd = open(av[1], O_RDWR);
@@ -276,19 +280,18 @@ int main(int ac, char *av[])
     if(!data.map)
         return (free(s), 1);
     if(check_errors(s, data.map))
-        return (1);
-    int i = 0;
-    while(data.map[i])
-        i++;
-        
-    data.height = i;
+        return (free(s), free_array(data.map), 1);
+    data.height = 0;
+    while(data.map[data.height])
+        (data.height)++;    
     data.width  = ft_strlen(data.map[0]);
+    printf("h : %d\n", data.height);
+
     data.img_h = 50;
     data.img_w = 50;
     data = mlx(data, data.map);
     mlx_key_hook(data.win_ptr, key_hook, &data);
     mlx_loop(data.mlx_ptr);
     free_array(data.map);
-   
     return (0);
 }
