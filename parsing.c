@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/26 17:51:00 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/27 22:22:26 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ int main()
             close(fd);
             break;
         }
+        if(ft_strlen(s) == 1)
+            return (write(1,"Error\n",6), 1);
         tmp = ft_join_free(tmp, s);
         free(s);
     }

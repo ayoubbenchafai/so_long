@@ -2,7 +2,7 @@ NAME = so_long
 CC = cc -g
 CFLAGS = -Wall -Wextra -Werror 
 
-SRC = test.c get_next_line_bonus.c gnl_utils_bonus.c
+SRC = so_long.c get_next_line_bonus.c gnl_utils_bonus.c ft_split.c
 
 OBJ = $(SRC:.c=.o)
 

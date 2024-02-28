@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:20:43 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/27 21:32:16 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/27 21:32:57 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,6 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
-
-typedef struct	s_data {
-	void	*img;
-    // char    *reative_path;
-    int img_width;
-    int img_height;
-	// char	*addr;
-	// int		bits_per_pixel;
-	// int		line_length;
-	// int		endian;
-}				t_data;
 
 int	    ft_check(char *s, char c);
 char	*get_next_line(int fd);
