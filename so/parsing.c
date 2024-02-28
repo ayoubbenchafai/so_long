@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 20:35:23 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 21:34:24 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,32 +218,26 @@ t_data    mlx(t_data data, char **map)
 
 void update_position(t_data *data, int new_x, int new_y)
 {
-    printf("new : (%d, %d)\n", new_x, new_y);
-    printf("p   : (%d, %d)\n", data->player.x, data->player.y);
+    static int i;
+    int k;
+    i = 1;
+    
+    k = get_nbr_collectible(data->map, data->height,data->width);
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/texture_black.xpm", &data->img_w, &data->img_h);
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
     
-    // if(new_x >=0 && new_x < (data->width * 50) && (new_y >=0 && new_y < (data->height * 50)) &&
-    if(data->map[new_y/50][new_x/50] != '1')
-    {
-        printf("no walls\n");
-          data->player.x = new_x;  
-          data->player.y = new_y;  
-    }
-    static int i = 0;
-    // int k = get_nbr_collectible(data->map, data->height,data->height);
-    //     printf("k ========   %d\n", k);
-
     if(data->map[new_y/50][new_x/50] == 'C')
-    {
         data->map[new_y/50][new_x/50] = '0';
-        // printf("%d\n", i);
-        i++;
-    }
-    if(i == k && data->map[new_y/50][new_x/50] == 'E')
+    if(k == 0 && data->map[new_y/50][new_x/50] == 'E')
         exit(0);
+    if(data->map[new_y/50][new_x/50] != '1'  && data->map[new_y/50][new_x/50] != 'E')
+    {
+        data->player.x = new_x;  
+        data->player.y = new_y;  
+    }
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/player.xpm", &data->img_w, &data->img_h);
-    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);    
+    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
+    printf("%d\n", i++);  
 }
 
 int key_hook(int key, t_data *data)
