@@ -6,27 +6,28 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 21:50:53 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/28 22:00:51 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-
 int len_char(char *s, char c)
 {
-    int i = 0;
-    if(!s)
+    int i;
+
+    i = 0;
+    if (!s)
         return (1);
     while (*s)
     {
-        if(*s == c)
+        if (*s == c)
             i++;
         s++;
     }
-    if(i > 1)
+    if (i > 1)
         return (i);
-    return (0);  
+    return (0);
 }
 
 char  *fill_string(int fd)
@@ -188,7 +189,7 @@ int get_nbr_collectible(char **map, int h, int w)
     return (k);
 }
 
-t_data    mlx(t_data data, char **map)
+t_data    mlx(t_data data)
 {
     int x;
     int y;
@@ -201,13 +202,13 @@ t_data    mlx(t_data data, char **map)
         x = 0;
         while(x < data.width)
         {
-            if(map[y][x] == 'P')
+            if(data.map[y][x] == 'P')
             {
                 data.player.x = x * 50;
                 data.player.y = y * 50;  
                 
             }
-            data.img = mlx_xpm_file_to_image(data.mlx_ptr, get_path_image(map[y][x]), &data.img_w, &data.img_h);
+            data.img = mlx_xpm_file_to_image(data.mlx_ptr, get_path_image(data.map[y][x]), &data.img_w, &data.img_h);
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
             x++;
         }
@@ -289,7 +290,7 @@ int main(int ac, char *av[])
 
     data.img_h = 50;
     data.img_w = 50;
-    data = mlx(data, data.map);
+    data = mlx(data);
     mlx_key_hook(data.win_ptr, key_hook, &data);
     mlx_loop(data.mlx_ptr);
     free_array(data.map);
