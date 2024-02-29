@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/29 18:43:30 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/29 22:14:36 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,16 @@ typedef struct s_data
     char        **c_map;
     t_player    player;
 } t_data;
+
 void flood_fill(t_data *data, int x, int y)
 {
     if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r' || data->c_map[y/50][x/50] == 'E')
         return;
     data->c_map[y/50][x/50] = 'r';
-    flood_fill(data, x, y + 50); // Move down
-    flood_fill(data, x, y - 50); // Move up
-    flood_fill(data, x + 50, y); // Move right
-    flood_fill(data, x - 50, y); // Move left
+    flood_fill(data, x, y + 50); 
+    flood_fill(data, x, y - 50); 
+    flood_fill(data, x + 50, y); 
+    flood_fill(data, x - 50, y);
 }
 
 char  *fill_string(int fd)
@@ -179,7 +180,6 @@ int  check_errors(char *s, char **map)
     return (0);
 }
 
-void f(){system("leaks a.out");}
 
 
 int error_flood_fill(t_data data)
@@ -306,13 +306,13 @@ int key_hook(int key, t_data *data)
     new_x = data->player.x;
     if(key == 53)
         exit(0);
-    if(key == 2) // D
+    if(key == 2)
         new_x += 50;
-    else if(key == 0) // A
+    else if(key == 0)
         new_x -= 50;
-    else if(key == 13) // W
+    else if(key == 13)
         new_y -= 50;
-    else if(key == 1) // S
+    else if(key == 1)
         new_y += 50; 
     update_position(data, new_x ,new_y);    
     return (0);
@@ -335,8 +335,7 @@ int main(int ac, char *av[])
     data.map = ft_split(s, '\n');
     data.c_map = ft_split(s, '\n');
     if(!data.map || !data.c_map)
-        return (free (s), 1);
-    // if(!data.map)
+        return (free(s), 1);
     if(check_errors(s, data.map))
         return (free(s), free_array(data.map), 1);
     data.height = 0;
@@ -353,17 +352,16 @@ int main(int ac, char *av[])
     return (0);
 }
 
-void *ft_mlx_xpm_file_to_image(t_data *data, char *path)
+void ft_mlx_xpm_file_to_image(t_data *data, char *path)
 {   
     path ="../images/player.xpm";
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, path, &data->img_w, &data->img_h);
     if(data->img  == NULL)
     {
-        mlx_destroy_image(data->mlx_ptr, data->img);
         mlx_destroy_window(data->mlx_ptr, data->win_ptr);
         exit(1);
     }
-    return (data->img);
+    // return (data->img);
 }
 //fllod(fill)
 // if(map == 1 || map = r)

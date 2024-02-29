@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:20:43 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/27 21:32:57 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/29 22:21:56 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include  <fcntl.h>
 #include  <mlx.h>
 # include <unistd.h>
-# include <stdio.h> //delete it
 
 # define WIDTH 650
 # define HEIGHT 250
@@ -33,7 +32,7 @@ size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
 char	*ft_strjoin(char *s1, const char *s2);
 char	*ft_strcpy(char *dst, const char *src);
-int	nbr_strings(const char *s, char c);
+int	    nbr_strings(const char *s, char c);
 char	**ft_split(char const *s, char c);
 
 #endif
