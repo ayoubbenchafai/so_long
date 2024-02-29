@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:06:14 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 16:16:41 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:45:48 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,6 @@ void update_position(t_mlx_data *data, int new_x, int new_y)
         data->player.x = new_x;
         data->player.y = new_y;
     }
-    int j = 0;
     int k = get_nbr_collectible(map, 5,13);
     static int c = 0;
     if (map[new_y/50][new_x/50] == 'C')
@@ -178,7 +177,7 @@ int handel_input(int key, t_mlx_data *data)
 
 char *get_path_image(int component)
 {
-    char *path;
+    char *path = NULL;
     if(component == '1')
         path = "./images/textures1.xpm";
     else if(component == '0')
@@ -221,7 +220,7 @@ int main()
     data.win_ptr = mlx_new_window(data.mlx_ptr, width * 50 , height * 50, "./so_long");
 
     int x ,y = -1;
-    int i= 0;
+    // int i= 0;
     while(++y < height)
     {
         x = -1;

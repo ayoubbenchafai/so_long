@@ -6,12 +6,26 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/28 22:16:53 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/02/29 18:43:30 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
+void	ft_putchar(char c)
+{
+	write(1, &c, 1);
+}
+void	ft_putnbr(int n)
+{
+	if (n > 9)
+	{
+		ft_putnbr(n / 10);
+		ft_putnbr(n % 10);
+	}
+	else
+		ft_putchar(n + '0');
+}
 int len_char(char *s, char c)
 {
     int i;
@@ -28,6 +42,35 @@ int len_char(char *s, char c)
     if (i > 1)
         return (i);
     return (0);
+}
+typedef struct s_player
+{
+    int x;
+    int y;
+} t_player;
+
+typedef struct s_data
+{
+    void        *mlx_ptr;
+    void        *win_ptr;
+    void        *img;
+    int         img_w;
+    int         img_h;
+    int         width;
+    int         height;
+    char        **map;
+    char        **c_map;
+    t_player    player;
+} t_data;
+void flood_fill(t_data *data, int x, int y)
+{
+    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r' || data->c_map[y/50][x/50] == 'E')
+        return;
+    data->c_map[y/50][x/50] = 'r';
+    flood_fill(data, x, y + 50); // Move down
+    flood_fill(data, x, y - 50); // Move up
+    flood_fill(data, x + 50, y); // Move right
+    flood_fill(data, x - 50, y); // Move left
 }
 
 char  *fill_string(int fd)
@@ -85,6 +128,8 @@ int  another_char(char *s)
 {
     char *ptr = "01CEP\n";
     int i = 0;
+    if(!s)
+        return (0);
     while(s[i])
     {
         if(!ft_check(ptr, s[i]))
@@ -136,24 +181,36 @@ int  check_errors(char *s, char **map)
 
 void f(){system("leaks a.out");}
 
-typedef struct s_player
+
+int error_flood_fill(t_data data)
 {
+    int i;
+    int j;
     int x;
     int y;
-} t_player;
-
-typedef struct s_data
-{
-    void        *mlx_ptr;
-    void        *win_ptr;
-    void        *img;
-    int         img_w;
-    int         img_h;
-    int         width;
-    int         height;
-    char **map;
-    t_player    player;
-} t_data;
+    
+    i = -1;
+    while(++i < data.height)
+    { 
+        j = -1;
+        while(++j < data.width)
+        {
+            if(data.map[i][j] == 'P')
+            {
+                x = j * 50;
+                y = i * 50;
+            }
+        }
+    }
+    flood_fill(&data, x, y);
+    j = -1;
+    while(data.c_map[++j])
+    {
+        if(ft_check(data.c_map[j], 'C'))
+            return (1);
+    }
+    return (0);
+}
 
 char *get_path_image(int component)
 {
@@ -180,7 +237,7 @@ int get_nbr_collectible(char **map, int h, int w)
         j = 0;
         while(j < w)
         {
-            if(map[i][j] == 'C')
+            if (map[i][j] == 'C')
                 k++;
             j++;    
         }
@@ -206,7 +263,6 @@ t_data    mlx(t_data data)
             {
                 data.player.x = x * 50;
                 data.player.y = y * 50;  
-                
             }
             data.img = mlx_xpm_file_to_image(data.mlx_ptr, get_path_image(data.map[y][x]), &data.img_w, &data.img_h);
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
@@ -220,23 +276,22 @@ t_data    mlx(t_data data)
 void update_position(t_data *data, int new_x, int new_y)
 {
     
+    static int  i;
     int         k;
-    static int i = 1;
+    
     k = get_nbr_collectible(data->map, data->height,data->width);
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/texture_black.xpm", &data->img_w, &data->img_h);
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
-    
     if(data->map[new_y/50][new_x/50] == 'C')
         data->map[new_y/50][new_x/50] = '0';
     if(k == 0 && data->map[new_y/50][new_x/50] == 'E')
         exit(0);
-   
     if(data->map[new_y/50][new_x/50] != '1'  && data->map[new_y/50][new_x/50] != 'E')
     {
         data->player.x = new_x;  
         data->player.y = new_y;  
-        printf("%d\n", i++);
-
+        ft_putnbr(++i);
+        ft_putchar('\n');
     }
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/player.xpm", &data->img_w, &data->img_h);
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
@@ -278,24 +333,50 @@ int main(int ac, char *av[])
     if(!s)
         return (close(fd), 1);
     data.map = ft_split(s, '\n');
-    if(!data.map)
-        return (free(s), 1);
+    data.c_map = ft_split(s, '\n');
+    if(!data.map || !data.c_map)
+        return (free (s), 1);
+    // if(!data.map)
     if(check_errors(s, data.map))
         return (free(s), free_array(data.map), 1);
     data.height = 0;
     while(data.map[data.height])
         (data.height)++;    
     data.width  = ft_strlen(data.map[0]);
-    printf("h : %d\n", data.height);
-
     data.img_h = 50;
     data.img_w = 50;
+    if(error_flood_fill(data))
+        return (write(1,"Error\nflood fill\n",17), 1);
     data = mlx(data);
     mlx_key_hook(data.win_ptr, key_hook, &data);
     mlx_loop(data.mlx_ptr);
-    free_array(data.map);
     return (0);
 }
 
+void *ft_mlx_xpm_file_to_image(t_data *data, char *path)
+{   
+    path ="../images/player.xpm";
+    data->img = mlx_xpm_file_to_image(data->mlx_ptr, path, &data->img_w, &data->img_h);
+    if(data->img  == NULL)
+    {
+        mlx_destroy_image(data->mlx_ptr, data->img);
+        mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+        exit(1);
+    }
+    return (data->img);
+}
+//fllod(fill)
+// if(map == 1 || map = r)
+    // return ;
+//map == r a
 
 
+  // Clean up
+    // mlx_destroy_image(mlx_ptr, img);
+    // mlx_destroy_window(mlx_ptr, win_ptr);
+
+
+//17 0
+//free(map)
+// destroy_win
+// exit(0)
