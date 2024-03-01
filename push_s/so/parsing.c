@@ -6,14 +6,25 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/03/01 20:43:38 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 23:21:18 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-#include <string.h> //ft_strcmp
-#include <stdio.h> 
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	size_t	i;
+
+	i = 0;
+	while (s1[i] || s2[i])
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
+	}
+	return (0);
+}
 
 void	ft_putchar(char c)
 {
@@ -31,92 +42,74 @@ void	ft_putnbr(int n)
 		ft_putchar(n + '0');
 }
 
-int len_char(char *s, char c)
+int	len_char(char *s, char c)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    if (!s)
-        return (1);
-    while (*s)
-    {
-        if (*s == c)
-            i++;
-        s++;
-    }
-    if (i > 1)
-        return (i);
-    return (0);
+	i = 0;
+	if (!s)
+		return (1);
+	while (*s)
+	{
+		if (*s == c)
+			i++;
+		s++;
+	}
+	if (i > 1)
+		return (i);
+	return (0);
 }
 
-void flood_fill(t_data *data, int x, int y)
+void	flood_fill(t_data *data, int x, int y)
 {
-    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r' || data->c_map[y/50][x/50] == 'E')
-        return;
-    data->c_map[y/50][x/50] = 'r';
-    flood_fill(data, x, y + 50); 
-    flood_fill(data, x, y - 50); 
-    flood_fill(data, x + 50, y); 
-    flood_fill(data, x - 50, y);
-}
-int count_ccurrence(char **map, int h, int w, int c)
-{
-    int i;
-    int j; 
-    int k;
-    
-    i = 0;
-    k = 0;
-    if(!map)
-        return (0);
-    while(i < h)
-    { 
-        j = 0;
-        while(j < w)
-        {
-            if (map[i][j] == c)
-                k++;
-            j++;    
-        }
-        i++;
-    }
-    return (k);
+    if (data->c_map[y / 50][x / 50] == '1' || data->c_map[y / 50][x / 50] == 'r'
+			|| data->c_map[y / 50][x / 50] == 'E')
+		return;
+	data->c_map[y/50][x/50] = 'r';
+	flood_fill(data, x, y + 50);
+	flood_fill(data, x, y - 50);
+	flood_fill(data, x + 50, y);
+	flood_fill(data, x - 50, y);
 }
 
-int check_flood_fill(t_data data)
+int	count_ccurrence(char **map, int h, int w, int c)
+{
+	int	i;
+	int	j;
+	int	k;
+
+	i = 0;
+	k = 0;
+	if (!map)
+		return (0);
+	while (i < h)
+	{
+		j = 0;
+		while (j < w)
+		{
+			if (map[i][j] == c)
+				k++;
+			j++;
+		}
+		i++;
+	}
+	return (k);
+}
+int  check_flood(t_data data)
 {
     int i;
     int j;
-    int x;
-    int y;
+    int e;
+    int c;
     
+    c = 0;
+    e = 0;
     i = -1;
     while(++i < data.height)
     { 
         j = -1;
         while(++j < data.width)
         {
-            if(data.map[i][j] == 'P')
-            {
-                x = j * 50;
-                y = i * 50;
-            }
-        }
-    }
-    flood_fill(&data, x, y);
-    // j = -1;
-    // map valid ->> C makinash E kayna
-    // mashi valid --> kayna E && C
-    int c = 0, e = 0;
-    i = -1;
-    while(++i < data.height)
-    { 
-        j = -1;
-        while(++j < data.width)
-        {
-            // if(data.c_map[i][j] == 'E' && (data.c_map[i][j-1] == '1' && data.c_map[i][j+1] =='1'
-            //     &&  data.c_map[i + 1][j + data.width -1] == '1' && data.c_map[i - 1][j - data.width -1 ] =='1'))
-            //         return 1;
             if(data.c_map[i][j] == '0')
                 return (1);
             if(data.c_map[i][j] == 'C')
@@ -128,46 +121,67 @@ int check_flood_fill(t_data data)
 
     if(c && e)
         return (1);
-
-    if(count_ccurrence(data.c_map, data.height, data.height, 'C') 
-        && count_ccurrence(data.c_map, data.height, data.height, 'E'))
-        return (1);
-    // return (0);
-
-    // j = -1;
-    // while(data.c_map[++j])
-    // {
-    //     // if(len_char(data.c_map[j], 'C') || len_char(data.c_map[j], 'E')) 
-    //     printf("%s\n", data.c_map[j]);
-    //         // return (1);
-    // }
-    // pause();
     return (0);
 }
-char  *fill_string(t_data data, char *av)
-{
-    char *s;
-    char *tmp;
 
-    tmp = NULL;
-    data.fd = open(av, O_RDWR); // update option O_RDWR
-    if(data.fd < 0)
-        return (NULL);
-    while(1)
-    {
-        s = get_next_line(data.fd);
-        if(!s)
+int	check_flood_fill(t_data d)
+{
+    int i;
+    int j;
+    int x;
+    int y;
+    
+    i = -1;
+    while(++i < d.height)
+    { 
+        j = -1;
+        while(++j < d.width)
         {
-            close(data.fd);
-            break;
+            if(d.map[i][j] == 'P')
+            {
+                x = j * 50;
+                y = i * 50;
+            }
         }
-        if(ft_strlen(s) == 1)
-            return (close(data.fd), free(s), write(1,"Error\nInvalid Map.\n", 19), exit(1), NULL);
-        tmp = ft_join_free(tmp, s);
-        free(s);
     }
-    close(data.fd);
-    return (tmp);
+    flood_fill(&d, x, y);
+    // j  = -1;
+    // while(d.c_map[++j])
+    // {
+    //     printf("%s\n", d.c_map[j]);
+    // }
+    // pause();
+    if(check_flood(d))
+        return (1);
+    return (0);
+}
+
+
+
+char	*fill_string(t_data data, char *av)
+{
+	char	*s;
+	char	*tmp;
+
+	tmp = NULL;
+	data.fd = open(av, O_RDWR);
+	if(data.fd < 0)
+		return (NULL);
+	while (1)
+	{
+		s = get_next_line(data.fd);
+		if (!s)
+		{
+			close(data.fd);
+			break;
+		}
+		if (ft_strlen(s) == 1)
+			return (close(data.fd), free(s), write(1,"Error\nInvalid Map.\n", 19), exit(1), NULL);
+		tmp = ft_join_free(tmp, s);
+		free(s);
+	}
+	close(data.fd);
+	return (tmp);
 }
 
 void	free_array(char **av)
@@ -185,113 +199,91 @@ void	free_array(char **av)
 	free(av);
 }
 
-int check_components(char *s)
+int	check_components(char *s)
 {
-    char    *ptr;
+	char	*ptr;
 
-    ptr = "01CEP";
-    while(*ptr)
-    {
-        if(!ft_check(s, *ptr))
-            return (0);
-        ptr++;
-    }
-    return (1);
+	ptr = "01CEP";
+	while (*ptr)
+	{
+		if (!ft_check(s, *ptr))
+			return (0);
+		ptr++;
+	}
+	return (1);
 }
 
-// "1110000CEPW" another char print errors
-int  another_char(char *s)
+int	another_char(char *s)
 {
-    char *ptr = "01CEP\n";
-    int i = 0;
-    if(!s)
-        return (0);
-    while(s[i])
-    {
-        if(!ft_check(ptr, s[i]))
-            return (0);
-        i++;
-    }
-    return (1);
+	int i;
+	char *ptr;
+
+	ptr = "01CEP\n";
+	i = 0;
+	if (!s)
+		return (0);
+	while (s[i])
+	{
+		if (!ft_check(ptr, s[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-int is_duplicate(char *s, char c)
+int	is_duplicate(char *s, char c)
 {
-    if(!s)
-        return (1);
-    while (*s)
-    {
-        if(*s != c)
-            return (1);
-        s++;
-    }
-    return (0);  
+	if (!s)
+		return (1);
+	while (*s)
+	{
+		if (*s != c)
+			return (1);
+		s++;
+	}
+	return (0);
 }
 
-void free_data(t_data data, int vlag)
+void	free_data(t_data data, int vlag)
 {
-    if(vlag == 1)
-        write(1,"Error\nInvaid Map.\n", 18);
-    free(data.s);
-    free_array(data.map);
-    free_array(data.c_map);
+	if (vlag == 1)
+		write(1, "Error\nInvaid Map.\n", 18);
+	free(data.s);
+	free_array(data.map);
+	free_array(data.c_map);
 }
 
-int  check_errors(t_data data)
+int	check_errors(t_data data)
 {
-    int i;
+	int i;
     int width;
     int height;
-    if(!check_components(data.s) || !another_char(data.s)) // check all components exists
-        // return (free(data.s), free_array(data.map), write(1,"Error\n",6), 1);
+    if(!check_components(data.s) || !another_char(data.s))
         return (free_data(data, 1), 1);
     if(len_char(data.s, 'P') || len_char(data.s, 'E') || !data.map)
-        // return (free(data.s), free_array(data.map), write(1,"Error\n",6), 1);
         return (free_data(data, 1), 1);
     i = -1;
     width = ft_strlen(data.map[0]);
     height = nbr_strings(data.s, '\n');
     while(data.map[++i])
     {
-        if(width != ft_strlen(data.map[i])) //length
+        if(width != ft_strlen(data.map[i]))
             return (free_data(data, 1), 1);
         if(data.map[i][0] != '1' || data.map[i][width - 1] != '1')
             return (free_data(data, 1), 1);
     }
-    if(height == width) // rectangulare
+    if(height == width)
         return (free_data(data, 1), 1);
     if(is_duplicate(data.map[0], '1')  || is_duplicate(data.map[height - 1], '1'))
         return (free_data(data, 1), 1);
     return (0);
 }
 
-
-
-
-
-int is_path_exist(char *path)
-{
-    int i = 0;
-    char *paths[5]= {"../images/wall.xpm", 
-            "../images/route.xpm",
-            "../images/player.xpm",
-            "../images/coins.xpm", 
-            "../images/exit.xpm"
-    };
-
-    if(!path)
-        return (0);
-    while(i < 5)
-    {
-        if(!strcmp(paths[i], path))
-            return (1);
-        i++;    
-    }
-    return (0);
-}
 char *get_image(int component, t_data data)
 {
-    char *path = NULL;
+    char *path;
+    
+    path =  NULL;
     if(component == '1')
         path = "../images/wall.xpm";
     else if(component == '0')
@@ -308,7 +300,6 @@ char *get_image(int component, t_data data)
 
 void *ft_mlx_xpm_file_to_image(t_data *data, char *filename)
 {   
-    //check_filename
     data->img = mlx_xpm_file_to_image(data->mlx_ptr, filename, &data->img_wh, &data->img_wh);
     if(data->img  == NULL)
     {
@@ -330,8 +321,6 @@ void *ft_mlx_new_window(t_data *data)
     }
     return (data->win_ptr);
 }
-
-
 
 t_data    mlx(t_data data, int x, int y)
 {
@@ -358,6 +347,7 @@ t_data    mlx(t_data data, int x, int y)
     }
     return (data);
 }
+
 int close_window(t_data *data)
 {
     mlx_destroy_window(data->mlx_ptr, data->win_ptr);
@@ -410,6 +400,7 @@ int key_hook(int key, t_data *data)
     update_position(data, new_x ,new_y);    
     return (0);
 }
+
 void f(){system("leaks a.out");}
 
 int main(int ac, char *av[])
@@ -438,21 +429,3 @@ int main(int ac, char *av[])
     mlx_loop(data.mlx_ptr);
     return (0);
 }
-
-
-// void mlx_new_window()
-//fllod(fill)
-// if(map == 1 || map = r)
-    // return ;
-//map == r a
-
-
-  // Clean up
-    // mlx_destroy_image(mlx_ptr, img);
-    // mlx_destroy_window(mlx_ptr, win_ptr);
-
-
-//17 0
-//free(map)
-// destroy_win
-// exit(0)
