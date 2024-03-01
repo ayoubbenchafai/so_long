@@ -6,11 +6,14 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/03/01 12:58:38 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 16:58:40 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
+#include <string.h> //ft_strcmp
+#include <stdio.h> 
+
 
 void	ft_putchar(char c)
 {
@@ -55,6 +58,18 @@ void flood_fill(t_data *data, int x, int y)
     flood_fill(data, x + 50, y); 
     flood_fill(data, x - 50, y);
 }
+
+// void flood_fill(t_data *data, int x, int y)
+// {
+//     if (x < 0 || x >= data->width || y < 0 || y >= data->height || data->c_map[y][x] == '1' || data->c_map[y][x] == 'r')
+//         return;
+//     data->c_map[y][x] = 'r';
+//     flood_fill(data, x, y + 1); // Move down
+//     flood_fill(data, x, y - 1); // Move up
+//     flood_fill(data, x + 1, y); // Move right
+//     flood_fill(data, x - 1, y); // Move left
+// }
+
 char  *fill_string(t_data data, char *av)
 {
     char *s;
@@ -201,35 +216,61 @@ int check_flood_fill(t_data data)
     }
     flood_fill(&data, x, y);
     j = -1;
+    
     while(data.c_map[++j])
     {
-        if(ft_check(data.c_map[j], 'C') || ft_check(data.c_map[j], 'E'))
+        if(ft_check(data.c_map[j], 'C'))
+        // printf("%s\n", data.c_map[j]);
             return (1);
     }
+    // pause();
     return (0);
 }
 
-
-
-char *get_image(int component)
+int is_path_exist(char *path)
 {
-    char *path; //check _path
+    int i = 0;
+    char *paths[5]= {"../images/wall.xpm", 
+            "../images/route.xpm",
+            "../images/player.xpm",
+            "../images/coins.xpm", 
+            "../images/exit.xpm"
+    };
+
+    if(!path)
+        return (0);
+    while(i < 5)
+    {
+        if(!strcmp(paths[i], path))
+            return (1);
+        i++;    
+    }
+    return (0);
+}
+char *get_image(int component, t_data data)
+{
+    char *path = NULL;
     if(component == '1')
-        path = "../images/textures1.xpm";
+        path = "../images/wall.xpm";
     else if(component == '0')
-        path = "../images/texture_black.xpm";
+        path = "../images/route.xpm";
     else if(component == 'P')
         path = "../images/player.xpm";
     else if(component == 'C')
-        path = "../images/zyro-image.xpm";
+        path = "../images/coins.xpm";
     else if(component == 'E')
-        path = "../images/exitt.xpm";
+        path = "../images/exit.xpm";
     return (path);
 }
 
 int get_nbr_collectible(char **map, int h, int w)
 {
-    int i = 0, j, k = 0;
+    int i;
+    int j; 
+    int k;
+    
+    i = 0;
+    k = 0;
     if(!map)
         return (-1);
     while(i < h)
@@ -249,7 +290,7 @@ int get_nbr_collectible(char **map, int h, int w)
 void *ft_mlx_xpm_file_to_image(t_data *data, char *filename)
 {   
     //check_filename
-    data->img = mlx_xpm_file_to_image(data->mlx_ptr, filename, &data->img_w, &data->img_h);
+    data->img = mlx_xpm_file_to_image(data->mlx_ptr, filename, &data->img_wh, &data->img_wh);
     if(data->img  == NULL)
     {
         mlx_destroy_window(data->mlx_ptr, data->win_ptr);
@@ -271,6 +312,8 @@ void *ft_mlx_new_window(t_data *data)
     return (data->win_ptr);
 }
 
+
+
 t_data    mlx(t_data data, int x, int y)
 {
     data.mlx_ptr = mlx_init();
@@ -290,7 +333,7 @@ t_data    mlx(t_data data, int x, int y)
                 data.player.x = x * 50;
                 data.player.y = y * 50;  
             }
-            data.img = ft_mlx_xpm_file_to_image(&data, get_image(data.map[y][x]));
+            data.img = ft_mlx_xpm_file_to_image(&data, get_image(data.map[y][x], data));
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
         }
     }
@@ -303,7 +346,7 @@ void update_position(t_data *data, int new_x, int new_y)
     int         k;
     
     k = get_nbr_collectible(data->map, data->height,data->width);
-    data->img = ft_mlx_xpm_file_to_image(data, "../images/texture_black.xpm");
+    data->img = ft_mlx_xpm_file_to_image(data, "../images/route.xpm");
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
     if(data->map[new_y/50][new_x/50] == 'C')
         data->map[new_y/50][new_x/50] = '0';
@@ -319,6 +362,7 @@ void update_position(t_data *data, int new_x, int new_y)
     data->img = ft_mlx_xpm_file_to_image(data, "../images/player.xpm");
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
 }
+
 int close_window(t_data *data)
 {
     mlx_destroy_window(data->mlx_ptr, data->win_ptr);
@@ -327,16 +371,17 @@ int close_window(t_data *data)
     exit(0);
     return (0);
 }
+
 int key_hook(int key, t_data *data)
 {
     int new_x;
     int new_y;
     
-    new_y= data -> player.y;
+    new_y = data -> player.y;
     new_x = data -> player.x;
     if(key == 53)
-        exit(0);
-    if(key == 2)
+        close_window(data);
+    if (key == 2)
         new_x += 50;
     else if(key == 0)
         new_x -= 50;
@@ -348,17 +393,17 @@ int key_hook(int key, t_data *data)
     return (0);
 }
 void f(){system("leaks a.out");}
+
 int main(int ac, char *av[])
 {
     t_data data;
     atexit(f);
     data.s = fill_string(data, av[1]);
     if(!av || !data.s || ac != 2)
-        return (write(1,"Error\n",6), 1);
+        return (write(1, "Error\n", 6), 1);
     data.map = ft_split(data.s , '\n');
     data.c_map = ft_split(data.s , '\n');
     if(!data.map || !data.c_map)
-    if(!data.map)
         return (free(data.s), 1);
     if(check_errors(data))
         return (1);
@@ -366,10 +411,9 @@ int main(int ac, char *av[])
     while(data.map[data.height])
         (data.height)++;    
     data.width  = ft_strlen(data.map[0]);
-    data.img_h = 50;
-    data.img_w = 50;
+    data.img_wh = 50;
     if(check_flood_fill(data))
-        return (write(1,"Error\nflood fill\n",17), 1);
+        return (write(1,"Error\nInvalid Map.\n",19), free_data(data, 0), 1);
     data = mlx(data, -1, -1);
     mlx_key_hook(data.win_ptr, key_hook, &data);
     mlx_hook(data.win_ptr, 17, 0, close_window, &data);

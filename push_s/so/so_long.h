@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:20:43 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/29 22:33:07 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 15:07:40 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ typedef struct s_data
     void        *mlx_ptr;
     void        *win_ptr;
     void        *img;
-    int         img_w;
-    int         img_h;
+    int         img_wh;
     int         width;
     int         height;
     char        **map;
