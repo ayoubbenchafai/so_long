@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/03/01 16:58:40 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 20:43:38 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	ft_putnbr(int n)
 	else
 		ft_putchar(n + '0');
 }
+
 int len_char(char *s, char c)
 {
     int i;
@@ -50,7 +51,7 @@ int len_char(char *s, char c)
 
 void flood_fill(t_data *data, int x, int y)
 {
-    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r')
+    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r' || data->c_map[y/50][x/50] == 'E')
         return;
     data->c_map[y/50][x/50] = 'r';
     flood_fill(data, x, y + 50); 
@@ -58,18 +59,91 @@ void flood_fill(t_data *data, int x, int y)
     flood_fill(data, x + 50, y); 
     flood_fill(data, x - 50, y);
 }
+int count_ccurrence(char **map, int h, int w, int c)
+{
+    int i;
+    int j; 
+    int k;
+    
+    i = 0;
+    k = 0;
+    if(!map)
+        return (0);
+    while(i < h)
+    { 
+        j = 0;
+        while(j < w)
+        {
+            if (map[i][j] == c)
+                k++;
+            j++;    
+        }
+        i++;
+    }
+    return (k);
+}
 
-// void flood_fill(t_data *data, int x, int y)
-// {
-//     if (x < 0 || x >= data->width || y < 0 || y >= data->height || data->c_map[y][x] == '1' || data->c_map[y][x] == 'r')
-//         return;
-//     data->c_map[y][x] = 'r';
-//     flood_fill(data, x, y + 1); // Move down
-//     flood_fill(data, x, y - 1); // Move up
-//     flood_fill(data, x + 1, y); // Move right
-//     flood_fill(data, x - 1, y); // Move left
-// }
+int check_flood_fill(t_data data)
+{
+    int i;
+    int j;
+    int x;
+    int y;
+    
+    i = -1;
+    while(++i < data.height)
+    { 
+        j = -1;
+        while(++j < data.width)
+        {
+            if(data.map[i][j] == 'P')
+            {
+                x = j * 50;
+                y = i * 50;
+            }
+        }
+    }
+    flood_fill(&data, x, y);
+    // j = -1;
+    // map valid ->> C makinash E kayna
+    // mashi valid --> kayna E && C
+    int c = 0, e = 0;
+    i = -1;
+    while(++i < data.height)
+    { 
+        j = -1;
+        while(++j < data.width)
+        {
+            // if(data.c_map[i][j] == 'E' && (data.c_map[i][j-1] == '1' && data.c_map[i][j+1] =='1'
+            //     &&  data.c_map[i + 1][j + data.width -1] == '1' && data.c_map[i - 1][j - data.width -1 ] =='1'))
+            //         return 1;
+            if(data.c_map[i][j] == '0')
+                return (1);
+            if(data.c_map[i][j] == 'C')
+                c++;
+            if(data.c_map[i][j] == 'E')  
+                e++;
+        }
+    }
 
+    if(c && e)
+        return (1);
+
+    if(count_ccurrence(data.c_map, data.height, data.height, 'C') 
+        && count_ccurrence(data.c_map, data.height, data.height, 'E'))
+        return (1);
+    // return (0);
+
+    // j = -1;
+    // while(data.c_map[++j])
+    // {
+    //     // if(len_char(data.c_map[j], 'C') || len_char(data.c_map[j], 'E')) 
+    //     printf("%s\n", data.c_map[j]);
+    //         // return (1);
+    // }
+    // pause();
+    return (0);
+}
 char  *fill_string(t_data data, char *av)
 {
     char *s;
@@ -88,7 +162,7 @@ char  *fill_string(t_data data, char *av)
             break;
         }
         if(ft_strlen(s) == 1)
-            return (close(data.fd), free(s), write(1,"Error\n",6), NULL);
+            return (close(data.fd), free(s), write(1,"Error\nInvalid Map.\n", 19), exit(1), NULL);
         tmp = ft_join_free(tmp, s);
         free(s);
     }
@@ -168,7 +242,6 @@ int  check_errors(t_data data)
     int i;
     int width;
     int height;
-    
     if(!check_components(data.s) || !another_char(data.s)) // check all components exists
         // return (free(data.s), free_array(data.map), write(1,"Error\n",6), 1);
         return (free_data(data, 1), 1);
@@ -194,38 +267,7 @@ int  check_errors(t_data data)
 
 
 
-int check_flood_fill(t_data data)
-{
-    int i;
-    int j;
-    int x;
-    int y;
-    
-    i = -1;
-    while(++i < data.height)
-    { 
-        j = -1;
-        while(++j < data.width)
-        {
-            if(data.map[i][j] == 'P')
-            {
-                x = j * 50;
-                y = i * 50;
-            }
-        }
-    }
-    flood_fill(&data, x, y);
-    j = -1;
-    
-    while(data.c_map[++j])
-    {
-        if(ft_check(data.c_map[j], 'C'))
-        // printf("%s\n", data.c_map[j]);
-            return (1);
-    }
-    // pause();
-    return (0);
-}
+
 
 int is_path_exist(char *path)
 {
@@ -263,29 +305,6 @@ char *get_image(int component, t_data data)
     return (path);
 }
 
-int get_nbr_collectible(char **map, int h, int w)
-{
-    int i;
-    int j; 
-    int k;
-    
-    i = 0;
-    k = 0;
-    if(!map)
-        return (-1);
-    while(i < h)
-    { 
-        j = 0;
-        while(j < w)
-        {
-            if (map[i][j] == 'C')
-                k++;
-            j++;    
-        }
-        i++;
-    }
-    return (k);
-}
 
 void *ft_mlx_xpm_file_to_image(t_data *data, char *filename)
 {   
@@ -330,8 +349,8 @@ t_data    mlx(t_data data, int x, int y)
         {
             if(data.map[y][x] == 'P')
             {
-                data.player.x = x * 50;
-                data.player.y = y * 50;  
+                data.p.x = x * 50;
+                data.p.y = y * 50;  
             }
             data.img = ft_mlx_xpm_file_to_image(&data, get_image(data.map[y][x], data));
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
@@ -339,30 +358,6 @@ t_data    mlx(t_data data, int x, int y)
     }
     return (data);
 }
-
-void update_position(t_data *data, int new_x, int new_y)
-{
-    static int  i;
-    int         k;
-    
-    k = get_nbr_collectible(data->map, data->height,data->width);
-    data->img = ft_mlx_xpm_file_to_image(data, "../images/route.xpm");
-    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
-    if(data->map[new_y/50][new_x/50] == 'C')
-        data->map[new_y/50][new_x/50] = '0';
-    if(k == 0 && data->map[new_y/50][new_x/50] == 'E')
-        exit(0);
-    if(data->map[new_y/50][new_x/50] != '1'  && data->map[new_y/50][new_x/50] != 'E')
-    {
-        data->player.x = new_x;  
-        data->player.y = new_y;  
-        ft_putnbr(++i);
-        ft_putchar('\n');
-    }
-    data->img = ft_mlx_xpm_file_to_image(data, "../images/player.xpm");
-    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
-}
-
 int close_window(t_data *data)
 {
     mlx_destroy_window(data->mlx_ptr, data->win_ptr);
@@ -372,13 +367,36 @@ int close_window(t_data *data)
     return (0);
 }
 
+void update_position(t_data *data, int new_x, int new_y)
+{
+    int         k;
+    static int  i;
+    
+    k = count_ccurrence(data->map, data->height,data->width, 'C');
+    data->img = ft_mlx_xpm_file_to_image(data, "../images/route.xpm");
+    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->p.x, data->p.y);
+    if(data->map[new_y/50][new_x/50] == 'C')
+        data->map[new_y/50][new_x/50] = '0';
+    if(k == 0 && data->map[new_y/50][new_x/50] == 'E')
+        close_window(data);
+    if(data->map[new_y/50][new_x/50] != '1' && data->map[new_y/50][new_x/50] != 'E')
+    {
+        data->p.x = new_x;  
+        data->p.y = new_y;  
+        ft_putnbr(++i);
+        ft_putchar('\n');
+    }
+    data->img = ft_mlx_xpm_file_to_image(data, "../images/player.xpm");
+    mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->p.x, data->p.y);  
+}
+
 int key_hook(int key, t_data *data)
 {
     int new_x;
     int new_y;
     
-    new_y = data -> player.y;
-    new_x = data -> player.x;
+    new_y = data -> p.y;
+    new_x = data -> p.x;
     if(key == 53)
         close_window(data);
     if (key == 2)

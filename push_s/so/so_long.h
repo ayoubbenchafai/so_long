@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 15:20:43 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/03/01 15:07:40 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 19:27:36 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,6 @@
 #include  <fcntl.h>
 #include  <mlx.h>
 # include <unistd.h>
-
-# define WIDTH 650
-# define HEIGHT 250
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
@@ -43,7 +40,7 @@ typedef struct s_data
     char        **c_map;
     int         fd;
     char        *s;
-    t_player    player;
+    t_player    p;
 } t_data;
 
 int	    ft_check(char *s, char c);
