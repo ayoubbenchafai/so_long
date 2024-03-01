@@ -6,7 +6,7 @@
 /*   By: aben-cha <aben-cha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 19:07:42 by aben-cha          #+#    #+#             */
-/*   Updated: 2024/02/29 23:02:15 by aben-cha         ###   ########.fr       */
+/*   Updated: 2024/03/01 12:58:38 by aben-cha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int len_char(char *s, char c)
 
 void flood_fill(t_data *data, int x, int y)
 {
-    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r' || data->c_map[y/50][x/50] == 'E')
+    if (data->c_map[y/50][x/50] == '1' || data->c_map[y/50][x/50] == 'r')
         return;
     data->c_map[y/50][x/50] = 'r';
     flood_fill(data, x, y + 50); 
@@ -55,7 +55,6 @@ void flood_fill(t_data *data, int x, int y)
     flood_fill(data, x + 50, y); 
     flood_fill(data, x - 50, y);
 }
-
 char  *fill_string(t_data data, char *av)
 {
     char *s;
@@ -140,13 +139,15 @@ int is_duplicate(char *s, char c)
     return (0);  
 }
 
-void free_data(t_data data)
+void free_data(t_data data, int vlag)
 {
-    write(1,"Error\nInvaid Map.\n", 18);
+    if(vlag == 1)
+        write(1,"Error\nInvaid Map.\n", 18);
     free(data.s);
     free_array(data.map);
     free_array(data.c_map);
 }
+
 int  check_errors(t_data data)
 {
     int i;
@@ -155,24 +156,24 @@ int  check_errors(t_data data)
     
     if(!check_components(data.s) || !another_char(data.s)) // check all components exists
         // return (free(data.s), free_array(data.map), write(1,"Error\n",6), 1);
-        return (free_data(data), 1);
+        return (free_data(data, 1), 1);
     if(len_char(data.s, 'P') || len_char(data.s, 'E') || !data.map)
         // return (free(data.s), free_array(data.map), write(1,"Error\n",6), 1);
-        return (free_data(data), 1);
+        return (free_data(data, 1), 1);
     i = -1;
     width = ft_strlen(data.map[0]);
     height = nbr_strings(data.s, '\n');
     while(data.map[++i])
     {
         if(width != ft_strlen(data.map[i])) //length
-            return (free_data(data), 1);
+            return (free_data(data, 1), 1);
         if(data.map[i][0] != '1' || data.map[i][width - 1] != '1')
-            return (free_data(data), 1);
+            return (free_data(data, 1), 1);
     }
     if(height == width) // rectangulare
-        return (free_data(data), 1);
+        return (free_data(data, 1), 1);
     if(is_duplicate(data.map[0], '1')  || is_duplicate(data.map[height - 1], '1'))
-        return (free_data(data), 1);
+        return (free_data(data, 1), 1);
     return (0);
 }
 
@@ -202,13 +203,15 @@ int check_flood_fill(t_data data)
     j = -1;
     while(data.c_map[++j])
     {
-        if(ft_check(data.c_map[j], 'C'))
+        if(ft_check(data.c_map[j], 'C') || ft_check(data.c_map[j], 'E'))
             return (1);
     }
     return (0);
 }
 
-char *get_path_image(int component)
+
+
+char *get_image(int component)
 {
     char *path; //check _path
     if(component == '1')
@@ -243,41 +246,64 @@ int get_nbr_collectible(char **map, int h, int w)
     return (k);
 }
 
-t_data    mlx(t_data data)
-{
-    int x;
-    int y;
-    
-    y = 0;
-    data.mlx_ptr = mlx_init();
-    data.win_ptr = mlx_new_window(data.mlx_ptr, data.width * 50 , data.height * 50, "./so_long");
-    while(y < data.height)
+void *ft_mlx_xpm_file_to_image(t_data *data, char *filename)
+{   
+    //check_filename
+    data->img = mlx_xpm_file_to_image(data->mlx_ptr, filename, &data->img_w, &data->img_h);
+    if(data->img  == NULL)
     {
-        x = 0;
-        while(x < data.width)
+        mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+        free_data(*data, 0);
+        exit(1);
+    }
+    return (data->img);
+}
+
+void *ft_mlx_new_window(t_data *data)
+{
+    data->win_ptr = mlx_new_window(data->mlx_ptr, data->width * 50, data->height * 50, "./so_long");
+    if(data->win_ptr  == NULL)
+    {
+        mlx_destroy_image(data->mlx_ptr, data->img);
+        free_data(*data, 0);
+        exit(1);
+    }
+    return (data->win_ptr);
+}
+
+t_data    mlx(t_data data, int x, int y)
+{
+    data.mlx_ptr = mlx_init();
+    if(data.mlx_ptr == NULL)
+    {
+        free_data(data, 0);
+        exit(1);
+    }
+    data.win_ptr = ft_mlx_new_window(&data);
+    while(++y < data.height)
+    {
+        x = -1;
+        while(++x < data.width)
         {
             if(data.map[y][x] == 'P')
             {
                 data.player.x = x * 50;
                 data.player.y = y * 50;  
             }
-            data.img = mlx_xpm_file_to_image(data.mlx_ptr, get_path_image(data.map[y][x]), &data.img_w, &data.img_h);
+            data.img = ft_mlx_xpm_file_to_image(&data, get_image(data.map[y][x]));
             mlx_put_image_to_window(data.mlx_ptr, data.win_ptr, data.img, x * 50, y * 50);
-            x++;
         }
-        y++;
     }
-    return data;
+    return (data);
 }
 
 void update_position(t_data *data, int new_x, int new_y)
 {
-    
     static int  i;
     int         k;
     
     k = get_nbr_collectible(data->map, data->height,data->width);
-    data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/texture_black.xpm", &data->img_w, &data->img_h);
+    data->img = ft_mlx_xpm_file_to_image(data, "../images/texture_black.xpm");
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);
     if(data->map[new_y/50][new_x/50] == 'C')
         data->map[new_y/50][new_x/50] = '0';
@@ -290,17 +316,24 @@ void update_position(t_data *data, int new_x, int new_y)
         ft_putnbr(++i);
         ft_putchar('\n');
     }
-    data->img = mlx_xpm_file_to_image(data->mlx_ptr, "../images/player.xpm", &data->img_w, &data->img_h);
+    data->img = ft_mlx_xpm_file_to_image(data, "../images/player.xpm");
     mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img, data->player.x, data->player.y);  
 }
-
+int close_window(t_data *data)
+{
+    mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+    mlx_destroy_image(data->mlx_ptr, data->img);
+    free_data(*data, 0);
+    exit(0);
+    return (0);
+}
 int key_hook(int key, t_data *data)
 {
     int new_x;
     int new_y;
     
-    new_y= data->player.y;
-    new_x = data->player.x;
+    new_y= data -> player.y;
+    new_x = data -> player.x;
     if(key == 53)
         exit(0);
     if(key == 2)
@@ -314,19 +347,18 @@ int key_hook(int key, t_data *data)
     update_position(data, new_x ,new_y);    
     return (0);
 }
-
+void f(){system("leaks a.out");}
 int main(int ac, char *av[])
 {
     t_data data;
-    
-    if(ac != 2)
-        return (1);    
+    atexit(f);
     data.s = fill_string(data, av[1]);
-    if(!data.s)
-        return (1);
+    if(!av || !data.s || ac != 2)
+        return (write(1,"Error\n",6), 1);
     data.map = ft_split(data.s , '\n');
     data.c_map = ft_split(data.s , '\n');
     if(!data.map || !data.c_map)
+    if(!data.map)
         return (free(data.s), 1);
     if(check_errors(data))
         return (1);
@@ -338,23 +370,15 @@ int main(int ac, char *av[])
     data.img_w = 50;
     if(check_flood_fill(data))
         return (write(1,"Error\nflood fill\n",17), 1);
-    data = mlx(data);
+    data = mlx(data, -1, -1);
     mlx_key_hook(data.win_ptr, key_hook, &data);
+    mlx_hook(data.win_ptr, 17, 0, close_window, &data);
     mlx_loop(data.mlx_ptr);
     return (0);
 }
 
-void ft_mlx_xpm_file_to_image(t_data *data, char *path)
-{   
-    path ="../images/player.xpm";
-    data->img = mlx_xpm_file_to_image(data->mlx_ptr, path, &data->img_w, &data->img_h);
-    if(data->img  == NULL)
-    {
-        mlx_destroy_window(data->mlx_ptr, data->win_ptr);
-        exit(1);
-    }
-    // return (data->img);
-}
+
+// void mlx_new_window()
 //fllod(fill)
 // if(map == 1 || map = r)
     // return ;
