@@ -1,15 +1,16 @@
 NAME = so_long
-CC = cc -g
-CFLAGS = -Wall -Wextra -Werror 
+CC = cc
+CFLAGS = -Wall -Wextra -Werror
 
-SRC = so_long.c get_next_line_bonus.c gnl_utils_bonus.c ft_split.c
+SRC = so_long.c get_next_line.c gnl_utils.c ft_split.c \
+	parsing1.c parsing2.c utils1.c utils2.c
 
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJ) 
-	$(CC) $(CFLAGS) $(OBJ)  -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -lmlx -framework OpenGL -framework AppKit -o $(NAME)
 
 %.o: %.c so_long.h
 	$(CC) $(CFLAGS) -c $< -o $@
